@@ -256,6 +256,21 @@ require('lazy').setup({
   'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
   --MY_START
   --'mfussenegger/nvim-dap',
+  {
+    'erifirin/unity-dap.nvim',
+    opts = {
+      -- your configuration; leave empty for default settings
+    },
+  },
+  {
+    'apyra/nvim-unity-sync',
+    config = function()
+      require('unity.plugin').setup {
+        -- Configs here (Optional)
+      }
+    end,
+    ft = 'cs',
+  },
   'stevearc/overseer.nvim',
   { 'nvim-mini/mini.nvim', version = false },
   {
