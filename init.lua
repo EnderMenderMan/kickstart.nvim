@@ -194,6 +194,12 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 --  Use CTRL+<hjkl> to switch between windows
 --
 --  See `:help wincmd` for a list of all window commands
+--  MY_START
+
+--vim.keymap.set('n','<C-r>',[":w | :TermExec cmd='cr \"%\"' size=50 direction=tab go_back=0<CR>", "Run"],{ desc = 'Move focus to the left window' })-- <lead> r
+--vim.keymap.set('n','<C-d>',[":w | :TermExec cmd='cr \"%\" -d' size=50 direction=tab go_back=0<CR>","Debug"],{ desc = 'Move focus to the left window' })-- <lead> r
+
+--  MY_END
 vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
@@ -248,7 +254,23 @@ rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
+  --MY_START
+  --'mfussenegger/nvim-dap',
+  'stevearc/overseer.nvim',
+  { 'nvim-mini/mini.nvim', version = false },
+  {
+    'stevearc/oil.nvim',
+    ---@module 'oil'
+    ---@type oil.SetupOpts
+    opts = {},
+    -- Optional dependencies
+    dependencies = { { 'nvim-mini/mini.icons', opts = {} } },
+    -- dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if you prefer nvim-web-devicons
+    -- Lazy loading is not recommended because it is very tricky to make it work correctly in all situations.
+    lazy = false,
+  },
 
+  --MY_END
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
@@ -283,6 +305,50 @@ require('lazy').setup({
       },
     },
   },
+  -- MY_START
+  {
+    'akinsho/nvim-toggleterm.lua',
+    cmd = { 'TermExec', 'ToggleTerm' },
+    config = function()
+      require('toggleterm').setup {
+        -- size can be a number or function which is passed the current terminal
+        -- size = 20 | function(term)
+        function(term)
+          if term.direction == 'horizontal' then
+            return 20
+          elseif term.direction == 'vertical' then
+            return vim.o.columns * 0.4
+          end
+        end,
+        hide_numbers = false, -- hide the number column in toggleterm buffers
+        shade_filetypes = {},
+        shade_terminals = true,
+        start_in_insert = true,
+        insert_mappings = false, -- whether or not the open mapping applies in insert mode
+        persist_size = true,
+        -- direction = 'vertical' | 'horizontal' | 'window' | 'float',
+        direction = 'horizontal',
+        close_on_exit = true, -- close the terminal window when the process exits
+        --shell = zsh, -- change the default shell
+        -- This field is only relevant if direction is set to 'float'
+        float_opts = {
+          -- The border key is *almost* the same as 'nvim_open_win'
+          -- see :h nvim_open_win for details on borders however
+          -- the 'curved' border is a custom border type
+          -- not natively supported but implemented in this plugin.
+          -- border = 'single' | 'double' | 'shadow' | 'curved' | ... other options supported by win open
+          border = 'curved',
+          winblend = 3,
+          highlights = {
+            border = 'Normal',
+            background = 'Normal',
+          },
+        },
+      }
+    end,
+  },
+
+  -- MY_END
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
@@ -671,7 +737,7 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
+        clangd = {},
         -- gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
@@ -984,7 +1050,7 @@ require('lazy').setup({
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
