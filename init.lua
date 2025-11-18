@@ -44,7 +44,6 @@ What is Kickstart?
 Kickstart Guide:
 
   TODO: The very first thing you should do is to run the command `:Tutor` in Neovim.
-
     If you don't know what this means, type the following:
       - <escape key>
       - :
@@ -89,7 +88,6 @@ P.S. You can delete this when you're done too. It's your config now! :)
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
-
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = false
 
@@ -196,8 +194,25 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 --  See `:help wincmd` for a list of all window commands
 --  MY_START
 
+package.path = package.path .. ';./custom/?.lua'
+
 --vim.keymap.set('n','<C-r>',[":w | :TermExec cmd='cr \"%\"' size=50 direction=tab go_back=0<CR>", "Run"],{ desc = 'Move focus to the left window' })-- <lead> r
 --vim.keymap.set('n','<C-d>',[":w | :TermExec cmd='cr \"%\" -d' size=50 direction=tab go_back=0<CR>","Debug"],{ desc = 'Move focus to the left window' })-- <lead> r
+local lsp_ignore = {}
+local p = vim.fs.joinpath(vim.fn.stdpath 'config', 'lua', 'lsps')
+for lsp_name, _ in vim.fs.dir(p) do
+  local status_ok, error_object = pcall(function()
+    local lsp_id = lsp_name:gsub('%.lua', '')
+    if lsp_ignore[lsp_id] == nil then
+      local lsp_config = require('lsps.' .. lsp_id)
+      vim.lsp.config(lsp_id, lsp_config)
+      vim.lsp.enable(lsp_id)
+    end
+  end)
+  if not status_ok then
+    vim.notify('failed to load LSP: ' .. lsp_name .. '\n\n' .. 'Reason: ' .. error_object, vim.log.levels.ERROR)
+  end
+end
 
 --  MY_END
 vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
@@ -253,7 +268,7 @@ rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-  'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
+  --'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
   --MY_START
   --'mfussenegger/nvim-dap',
   {
@@ -285,6 +300,43 @@ require('lazy').setup({
     lazy = false,
   },
 
+  {
+    'folke/trouble.nvim',
+    opts = {}, -- for default options, refer to the configuration section for custom setup.
+    cmd = 'Trouble',
+    keys = {
+      {
+        '<leader>xx',
+        '<cmd>Trouble diagnostics toggle<cr>',
+        desc = 'Diagnostics (Trouble)',
+      },
+      {
+        '<leader>xX',
+        '<cmd>Trouble diagnostics toggle filter.buf=0<cr>',
+        desc = 'Buffer Diagnostics (Trouble)',
+      },
+      {
+        '<leader>cs',
+        '<cmd>Trouble symbols toggle focus=false<cr>',
+        desc = 'Symbols (Trouble)',
+      },
+      {
+        '<leader>cl',
+        '<cmd>Trouble lsp toggle focus=false win.position=right<cr>',
+        desc = 'LSP Definitions / references / ... (Trouble)',
+      },
+      {
+        '<leader>xL',
+        '<cmd>Trouble loclist toggle<cr>',
+        desc = 'Location List (Trouble)',
+      },
+      {
+        '<leader>xQ',
+        '<cmd>Trouble qflist toggle<cr>',
+        desc = 'Quickfix List (Trouble)',
+      },
+    },
+  },
   --MY_END
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -292,7 +344,6 @@ require('lazy').setup({
   --
   -- Use `opts = {}` to automatically pass options to a plugin's `setup()` function, forcing the plugin to be loaded.
   --
-
   -- Alternatively, use `config = function() ... end` for full control over the configuration.
   -- If you prefer to call `setup` explicitly, use:
   --    {
@@ -764,7 +815,40 @@ require('lazy').setup({
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
         --
-
+        -- csharp_ls = {
+        --   settings = {
+        --     ['csharp|background_analysis'] = {
+        --       dotnet_analyzer_diagnostics_scope = 'fullSolution',
+        --       dotnet_compiler_diagnostics_scope = 'fullSolution',
+        --     },
+        --     ['csharp|inlay_hints'] = {
+        --       csharp_enable_inlay_hints_for_implicit_object_creation = true,
+        --       csharp_enable_inlay_hints_for_implicit_variable_types = true,
+        --       csharp_enable_inlay_hints_for_lambda_parameter_types = true,
+        --       csharp_enable_inlay_hints_for_types = true,
+        --       dotnet_enable_inlay_hints_for_indexer_parameters = true,
+        --       dotnet_enable_inlay_hints_for_literal_parameters = true,
+        --       dotnet_enable_inlay_hints_for_object_creation_parameters = true,
+        --       dotnet_enable_inlay_hints_for_other_parameters = true,
+        --       dotnet_enable_inlay_hints_for_parameters = true,
+        --       dotnet_suppress_inlay_hints_for_parameters_that_differ_only_by_suffix = true,
+        --       dotnet_suppress_inlay_hints_for_parameters_that_match_argument_name = true,
+        --       dotnet_suppress_inlay_hints_for_parameters_that_match_method_intent = true,
+        --     },
+        --     ['csharp|symbol_search'] = {
+        --       dotnet_search_reference_assemblies = true,
+        --     },
+        --     ['csharp|completion'] = {
+        --       dotnet_show_name_completion_suggestions = true,
+        --       dotnet_show_completion_items_from_unimported_namespaces = true,
+        --       dotnet_provide_regex_completions = true,
+        --     },
+        --     ['csharp|code_lens'] = {
+        --       dotnet_enable_references_code_lens = true,
+        --     },
+        --   },
+        -- },
+        --
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -817,7 +901,8 @@ require('lazy').setup({
     end,
   },
 
-  { -- Autoformat
+  {
+    -- Autoformat
     'stevearc/conform.nvim',
     event = { 'BufWritePre' },
     cmd = { 'ConformInfo' },
