@@ -198,21 +198,21 @@ package.path = package.path .. ';./custom/?.lua'
 
 --vim.keymap.set('n','<C-r>',[":w | :TermExec cmd='cr \"%\"' size=50 direction=tab go_back=0<CR>", "Run"],{ desc = 'Move focus to the left window' })-- <lead> r
 --vim.keymap.set('n','<C-d>',[":w | :TermExec cmd='cr \"%\" -d' size=50 direction=tab go_back=0<CR>","Debug"],{ desc = 'Move focus to the left window' })-- <lead> r
-local lsp_ignore = {}
-local p = vim.fs.joinpath(vim.fn.stdpath 'config', 'lua', 'lsps')
-for lsp_name, _ in vim.fs.dir(p) do
-  local status_ok, error_object = pcall(function()
-    local lsp_id = lsp_name:gsub('%.lua', '')
-    if lsp_ignore[lsp_id] == nil then
-      local lsp_config = require('lsps.' .. lsp_id)
-      vim.lsp.config(lsp_id, lsp_config)
-      vim.lsp.enable(lsp_id)
-    end
-  end)
-  if not status_ok then
-    vim.notify('failed to load LSP: ' .. lsp_name .. '\n\n' .. 'Reason: ' .. error_object, vim.log.levels.ERROR)
-  end
-end
+-- local lsp_ignore = {}
+-- local p = vim.fs.joinpath(vim.fn.stdpath 'config', 'lua', 'lsps')
+-- for lsp_name, _ in vim.fs.dir(p) do
+--   local status_ok, error_object = pcall(function()
+--     local lsp_id = lsp_name:gsub('%.lua', '')
+--     if lsp_ignore[lsp_id] == nil then
+--       local lsp_config = require('lsps.' .. lsp_id)
+--       vim.lsp.config(lsp_id, lsp_config)
+--       vim.lsp.enable(lsp_id)
+--     end
+--   end)
+--   if not status_ok then
+--     vim.notify('failed to load LSP: ' .. lsp_name .. '\n\n' .. 'Reason: ' .. error_object, vim.log.levels.ERROR)
+--   end
+-- end
 
 --  MY_END
 vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
@@ -372,47 +372,47 @@ require('lazy').setup({
     },
   },
   -- MY_START
-  {
-    'akinsho/nvim-toggleterm.lua',
-    cmd = { 'TermExec', 'ToggleTerm' },
-    config = function()
-      require('toggleterm').setup {
-        -- size can be a number or function which is passed the current terminal
-        -- size = 20 | function(term)
-        function(term)
-          if term.direction == 'horizontal' then
-            return 20
-          elseif term.direction == 'vertical' then
-            return vim.o.columns * 0.4
-          end
-        end,
-        hide_numbers = false, -- hide the number column in toggleterm buffers
-        shade_filetypes = {},
-        shade_terminals = true,
-        start_in_insert = true,
-        insert_mappings = false, -- whether or not the open mapping applies in insert mode
-        persist_size = true,
-        -- direction = 'vertical' | 'horizontal' | 'window' | 'float',
-        direction = 'horizontal',
-        close_on_exit = true, -- close the terminal window when the process exits
-        --shell = zsh, -- change the default shell
-        -- This field is only relevant if direction is set to 'float'
-        float_opts = {
-          -- The border key is *almost* the same as 'nvim_open_win'
-          -- see :h nvim_open_win for details on borders however
-          -- the 'curved' border is a custom border type
-          -- not natively supported but implemented in this plugin.
-          -- border = 'single' | 'double' | 'shadow' | 'curved' | ... other options supported by win open
-          border = 'curved',
-          winblend = 3,
-          highlights = {
-            border = 'Normal',
-            background = 'Normal',
-          },
-        },
-      }
-    end,
-  },
+  -- {
+  --   'akinsho/nvim-toggleterm.lua',
+  --   cmd = { 'TermExec', 'ToggleTerm' },
+  --   config = function()
+  --     require('toggleterm').setup {
+  --       -- size can be a number or function which is passed the current terminal
+  --       -- size = 20 | function(term)
+  --       function(term)
+  --         if term.direction == 'horizontal' then
+  --           return 20
+  --         elseif term.direction == 'vertical' then
+  --           return vim.o.columns * 0.4
+  --         end
+  --       end,
+  --       hide_numbers = false, -- hide the number column in toggleterm buffers
+  --       shade_filetypes = {},
+  --       shade_terminals = true,
+  --       start_in_insert = true,
+  --       insert_mappings = false, -- whether or not the open mapping applies in insert mode
+  --       persist_size = true,
+  --       -- direction = 'vertical' | 'horizontal' | 'window' | 'float',
+  --       direction = 'horizontal',
+  --       close_on_exit = true, -- close the terminal window when the process exits
+  --       --shell = zsh, -- change the default shell
+  --       -- This field is only relevant if direction is set to 'float'
+  --       float_opts = {
+  --         -- The border key is *almost* the same as 'nvim_open_win'
+  --         -- see :h nvim_open_win for details on borders however
+  --         -- the 'curved' border is a custom border type
+  --         -- not natively supported but implemented in this plugin.
+  --         -- border = 'single' | 'double' | 'shadow' | 'curved' | ... other options supported by win open
+  --         border = 'curved',
+  --         winblend = 3,
+  --         highlights = {
+  --           border = 'Normal',
+  --           background = 'Normal',
+  --         },
+  --       },
+  --     }
+  --   end,
+  -- },
 
   -- MY_END
 
@@ -622,7 +622,7 @@ require('lazy').setup({
       { 'j-hui/fidget.nvim', opts = {} },
 
       -- Allows extra capabilities provided by blink.cmp
-      'saghen/blink.cmp',
+      --'saghen/blink.cmp',
     },
     config = function()
       -- Brief aside: **What is LSP?**
@@ -791,7 +791,9 @@ require('lazy').setup({
       --  By default, Neovim doesn't support everything that is in the LSP specification.
       --  When you add blink.cmp, luasnip, etc. Neovim now has *more* capabilities.
       --  So, we create new capabilities with blink.cmp, and then broadcast that to the servers.
-      local capabilities = require('blink.cmp').get_lsp_capabilities()
+
+      --local capabilities = require('blink.cmp').get_lsp_capabilities()
+      local capabilities = require('cmp_nvim_lsp').default_capabilities() --MY_EDIT
 
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
@@ -815,39 +817,39 @@ require('lazy').setup({
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
         --
-        -- csharp_ls = {
-        --   settings = {
-        --     ['csharp|background_analysis'] = {
-        --       dotnet_analyzer_diagnostics_scope = 'fullSolution',
-        --       dotnet_compiler_diagnostics_scope = 'fullSolution',
-        --     },
-        --     ['csharp|inlay_hints'] = {
-        --       csharp_enable_inlay_hints_for_implicit_object_creation = true,
-        --       csharp_enable_inlay_hints_for_implicit_variable_types = true,
-        --       csharp_enable_inlay_hints_for_lambda_parameter_types = true,
-        --       csharp_enable_inlay_hints_for_types = true,
-        --       dotnet_enable_inlay_hints_for_indexer_parameters = true,
-        --       dotnet_enable_inlay_hints_for_literal_parameters = true,
-        --       dotnet_enable_inlay_hints_for_object_creation_parameters = true,
-        --       dotnet_enable_inlay_hints_for_other_parameters = true,
-        --       dotnet_enable_inlay_hints_for_parameters = true,
-        --       dotnet_suppress_inlay_hints_for_parameters_that_differ_only_by_suffix = true,
-        --       dotnet_suppress_inlay_hints_for_parameters_that_match_argument_name = true,
-        --       dotnet_suppress_inlay_hints_for_parameters_that_match_method_intent = true,
-        --     },
-        --     ['csharp|symbol_search'] = {
-        --       dotnet_search_reference_assemblies = true,
-        --     },
-        --     ['csharp|completion'] = {
-        --       dotnet_show_name_completion_suggestions = true,
-        --       dotnet_show_completion_items_from_unimported_namespaces = true,
-        --       dotnet_provide_regex_completions = true,
-        --     },
-        --     ['csharp|code_lens'] = {
-        --       dotnet_enable_references_code_lens = true,
-        --     },
-        --   },
-        -- },
+        csharp_ls = {
+          settings = {
+            ['csharp|background_analysis'] = {
+              dotnet_analyzer_diagnostics_scope = 'fullSolution',
+              dotnet_compiler_diagnostics_scope = 'fullSolution',
+            },
+            ['csharp|inlay_hints'] = {
+              csharp_enable_inlay_hints_for_implicit_object_creation = true,
+              csharp_enable_inlay_hints_for_implicit_variable_types = true,
+              csharp_enable_inlay_hints_for_lambda_parameter_types = true,
+              csharp_enable_inlay_hints_for_types = true,
+              dotnet_enable_inlay_hints_for_indexer_parameters = true,
+              dotnet_enable_inlay_hints_for_literal_parameters = true,
+              dotnet_enable_inlay_hints_for_object_creation_parameters = true,
+              dotnet_enable_inlay_hints_for_other_parameters = true,
+              dotnet_enable_inlay_hints_for_parameters = true,
+              dotnet_suppress_inlay_hints_for_parameters_that_differ_only_by_suffix = true,
+              dotnet_suppress_inlay_hints_for_parameters_that_match_argument_name = true,
+              dotnet_suppress_inlay_hints_for_parameters_that_match_method_intent = true,
+            },
+            ['csharp|symbol_search'] = {
+              dotnet_search_reference_assemblies = true,
+            },
+            ['csharp|completion'] = {
+              dotnet_show_name_completion_suggestions = true,
+              dotnet_show_completion_items_from_unimported_namespaces = true,
+              dotnet_provide_regex_completions = true,
+            },
+            ['csharp|code_lens'] = {
+              dotnet_enable_references_code_lens = true,
+            },
+          },
+        },
         --
         lua_ls = {
           -- cmd = { ... },
@@ -901,146 +903,148 @@ require('lazy').setup({
     end,
   },
 
-  {
-    -- Autoformat
-    'stevearc/conform.nvim',
-    event = { 'BufWritePre' },
-    cmd = { 'ConformInfo' },
-    keys = {
-      {
-        '<leader>f',
-        function()
-          require('conform').format { async = true, lsp_format = 'fallback' }
-        end,
-        mode = '',
-        desc = '[F]ormat buffer',
-      },
-    },
-    opts = {
-      notify_on_error = false,
-      format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
-        if disable_filetypes[vim.bo[bufnr].filetype] then
-          return nil
-        else
-          return {
-            timeout_ms = 500,
-            lsp_format = 'fallback',
-          }
-        end
-      end,
-      formatters_by_ft = {
-        lua = { 'stylua' },
-        -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
-        --
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
-      },
-    },
-  },
+  -- {
+  --   -- Autoformat
+  --   'stevearc/conform.nvim',
+  --   event = { 'BufWritePre' },
+  --   cmd = { 'ConformInfo' },
+  --   keys = {
+  --     {
+  --       '<leader>f',
+  --       function()
+  --         require('conform').format { async = true, lsp_format = 'fallback' }
+  --       end,
+  --       mode = '',
+  --       desc = '[F]ormat buffer',
+  --     },
+  --   },
+  --   opts = {
+  --     notify_on_error = false,
+  --     format_on_save = function(bufnr)
+  --       -- Disable "format_on_save lsp_fallback" for languages that don't
+  --       -- have a well standardized coding style. You can add additional
+  --       -- languages here or re-enable it for the disabled ones.
+  --       local disable_filetypes = { c = true, cpp = true }
+  --       if disable_filetypes[vim.bo[bufnr].filetype] then
+  --         return nil
+  --       else
+  --         return {
+  --           timeout_ms = 500,
+  --           lsp_format = 'fallback',
+  --         }
+  --       end
+  --     end,
+  --     formatters_by_ft = {
+  --       lua = { 'stylua' },
+  --       -- Conform can also run multiple formatters sequentially
+  --       -- python = { "isort", "black" },
+  --       --
+  --       -- You can use 'stop_after_first' to run the first available formatter from the list
+  --       -- javascript = { "prettierd", "prettier", stop_after_first = true },
+  --     },
+  --   },
+  -- },
 
-  { -- Autocompletion
-    'saghen/blink.cmp',
-    event = 'VimEnter',
-    version = '1.*',
-    dependencies = {
-      -- Snippet Engine
-      {
-        'L3MON4D3/LuaSnip',
-        version = '2.*',
-        build = (function()
-          -- Build Step is needed for regex support in snippets.
-          -- This step is not supported in many windows environments.
-          -- Remove the below condition to re-enable on windows.
-          if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
-            return
-          end
-          return 'make install_jsregexp'
-        end)(),
-        dependencies = {
-          -- `friendly-snippets` contains a variety of premade snippets.
-          --    See the README about individual language/framework/plugin snippets:
-          --    https://github.com/rafamadriz/friendly-snippets
-          -- {
-          --   'rafamadriz/friendly-snippets',
-          --   config = function()
-          --     require('luasnip.loaders.from_vscode').lazy_load()
-          --   end,
-          -- },
-        },
-        opts = {},
-      },
-      'folke/lazydev.nvim',
-    },
-    --- @module 'blink.cmp'
-    --- @type blink.cmp.Config
-    opts = {
-      keymap = {
-        -- 'default' (recommended) for mappings similar to built-in completions
-        --   <c-y> to accept ([y]es) the completion.
-        --    This will auto-import if your LSP supports it.
-        --    This will expand snippets if the LSP sent a snippet.
-        -- 'super-tab' for tab to accept
-        -- 'enter' for enter to accept
-        -- 'none' for no mappings
-        --
-        -- For an understanding of why the 'default' preset is recommended,
-        -- you will need to read `:help ins-completion`
-        --
-        -- No, but seriously. Please read `:help ins-completion`, it is really good!
-        --
-        -- All presets have the following mappings:
-        -- <tab>/<s-tab>: move to right/left of your snippet expansion
-        -- <c-space>: Open menu or open docs if already open
-        -- <c-n>/<c-p> or <up>/<down>: Select next/previous item
-        -- <c-e>: Hide menu
-        -- <c-k>: Toggle signature help
-        --
-        -- See :h blink-cmp-config-keymap for defining your own keymap
-        preset = 'default',
-
-        -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
-        --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
-      },
-
-      appearance = {
-        -- 'mono' (default) for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
-        -- Adjusts spacing to ensure icons are aligned
-        nerd_font_variant = 'mono',
-      },
-
-      completion = {
-        -- By default, you may press `<c-space>` to show the documentation.
-        -- Optionally, set `auto_show = true` to show the documentation after a delay.
-        documentation = { auto_show = false, auto_show_delay_ms = 500 },
-      },
-
-      sources = {
-        default = { 'lsp', 'path', 'snippets', 'lazydev' },
-        providers = {
-          lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
-        },
-      },
-
-      snippets = { preset = 'luasnip' },
-
-      -- Blink.cmp includes an optional, recommended rust fuzzy matcher,
-      -- which automatically downloads a prebuilt binary when enabled.
-      --
-      -- By default, we use the Lua implementation instead, but you may enable
-      -- the rust implementation via `'prefer_rust_with_warning'`
-      --
-      -- See :h blink-cmp-config-fuzzy for more information
-      fuzzy = { implementation = 'lua' },
-
-      -- Shows a signature help window while you type arguments for a function
-      signature = { enabled = true },
-    },
-  },
+  --MY_REMOVED_START
+  -- { -- Autocompletion
+  --   'saghen/blink.cmp',
+  --   event = 'VimEnter',
+  --   version = '1.*',
+  --   dependencies = {
+  --     -- Snippet Engine
+  --     {
+  --       'L3MON4D3/LuaSnip',
+  --       version = '2.*',
+  --       build = (function()
+  --         -- Build Step is needed for regex support in snippets.
+  --         -- This step is not supported in many windows environments.
+  --         -- Remove the below condition to re-enable on windows.
+  --         if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
+  --           return
+  --         end
+  --         return 'make install_jsregexp'
+  --       end)(),
+  --       dependencies = {
+  --         -- `friendly-snippets` contains a variety of premade snippets.
+  --         --    See the README about individual language/framework/plugin snippets:
+  --         --    https://github.com/rafamadriz/friendly-snippets
+  --         -- {
+  --         --   'rafamadriz/friendly-snippets',
+  --         --   config = function()
+  --         --     require('luasnip.loaders.from_vscode').lazy_load()
+  --         --   end,
+  --         -- },
+  --       },
+  --       opts = {},
+  --     },
+  --     'folke/lazydev.nvim',
+  --   },
+  --   --- @module 'blink.cmp'
+  --   --- @type blink.cmp.Config
+  --   opts = {
+  --     keymap = {
+  --       -- 'default' (recommended) for mappings similar to built-in completions
+  --       --   <c-y> to accept ([y]es) the completion.
+  --       --    This will auto-import if your LSP supports it.
+  --       --    This will expand snippets if the LSP sent a snippet.
+  --       -- 'super-tab' for tab to accept
+  --       -- 'enter' for enter to accept
+  --       -- 'none' for no mappings
+  --       --
+  --       -- For an understanding of why the 'default' preset is recommended,
+  --       -- you will need to read `:help ins-completion`
+  --       --
+  --       -- No, but seriously. Please read `:help ins-completion`, it is really good!
+  --       --
+  --       -- All presets have the following mappings:
+  --       -- <tab>/<s-tab>: move to right/left of your snippet expansion
+  --       -- <c-space>: Open menu or open docs if already open
+  --       -- <c-n>/<c-p> or <up>/<down>: Select next/previous item
+  --       -- <c-e>: Hide menu
+  --       -- <c-k>: Toggle signature help
+  --       --
+  --       -- See :h blink-cmp-config-keymap for defining your own keymap
+  --       preset = 'default',
+  --
+  --       -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
+  --       --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
+  --     },
+  --
+  --     appearance = {
+  --       -- 'mono' (default) for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
+  --       -- Adjusts spacing to ensure icons are aligned
+  --       nerd_font_variant = 'mono',
+  --     },
+  --
+  --     completion = {
+  --       -- By default, you may press `<c-space>` to show the documentation.
+  --       -- Optionally, set `auto_show = true` to show the documentation after a delay.
+  --       documentation = { auto_show = false, auto_show_delay_ms = 500 },
+  --     },
+  --
+  --     sources = {
+  --       default = { 'lsp', 'path', 'snippets', 'lazydev' },
+  --       providers = {
+  --         lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
+  --       },
+  --     },
+  --
+  --     snippets = { preset = 'luasnip' },
+  --
+  --     -- Blink.cmp includes an optional, recommended rust fuzzy matcher,
+  --     -- which automatically downloads a prebuilt binary when enabled.
+  --     --
+  --     -- By default, we use the Lua implementation instead, but you may enable
+  --     -- the rust implementation via `'prefer_rust_with_warning'`
+  --     --
+  --     -- See :h blink-cmp-config-fuzzy for more information
+  --     fuzzy = { implementation = 'lua' },
+  --
+  --     -- Shows a signature help window while you type arguments for a function
+  --     signature = { enabled = true },
+  --   },
+  -- },
+  -- MY_REMOVED_END
 
   { -- You can easily change to a different colorscheme.
     -- Change the name of the colorscheme plugin below, and then
@@ -1177,6 +1181,6 @@ require('lazy').setup({
     },
   },
 })
-
+require 'custom.gautocmds'
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
